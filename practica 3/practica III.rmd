@@ -21,7 +21,7 @@ dataframe en R.
 
 ```{r}
 library(readxl)
-datos = data.frame(read_excel("practica 3/dataset_ejer1.xlsx"))
+datos = data.frame(read_excel("dataset_ejer1.xlsx"))
 dim(datos)
 ```
 Con la carga de los datos, como segundo paso se implementa el modelo de regresion logistica
@@ -76,7 +76,7 @@ la variable dependiente a diferentes valores de la variable independiente.
 
 ```{r}
 library(readxl)
-datos <- data.frame(read_excel("practica 3/dataset_ejer_2.xlsx"))
+datos <- data.frame(read_excel("dataset_ejer_2.xlsx"))
 dim(datos)
 ```
 
@@ -84,7 +84,7 @@ dim(datos)
 
 ```{r}
 library(readxl)
-datos <- data.frame(read_excel("practica 3/dataset_ejer_3.xlsx"))
+datos <- data.frame(read_excel("dataset_ejer_3.xlsx"))
 dim(datos)
 ```
 
