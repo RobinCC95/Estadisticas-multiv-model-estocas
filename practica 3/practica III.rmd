@@ -1,0 +1,47 @@
+---
+title: "Practica III"
+author: "Robinson Aldair Cuayal"
+date: "2023-03-11"
+output: word_document
+lang: es-ES
+toc: TRUE
+---
+
+\newpage
+
+# Punto 1
+
+```{r}
+library(readxl)
+datos <- data.frame(read_excel("dataset_ejer1.xlsx"))
+dim(datos)
+
+```
+
+# Punto 2
+
+```{r}
+library(readxl)
+datos <- data.frame(read_excel("dataset_ejer_2.xlsx"))
+dim(datos)
+```
+
+# Punto 3
+
+```{r}
+library(readxl)
+datos <- data.frame(read_excel("dataset_ejer_3.xlsx"))
+dim(datos)
+```
+
+# Punto 4
+
+```{r}
+
+```
+
+# Punto 5
+
+```{r}
+
+```

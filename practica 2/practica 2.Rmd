@@ -1,0 +1,473 @@
+---
+title: "Practica II"
+author: "Robinson Aldair Cuayal"
+date: "2023-03-11"
+output: word_document
+lang: es-ES
+toc: TRUE
+---
+
+\newpage
+
+# Punto 1
+
+Los datos de este ejercicio son:
+```{r}
+media = 140
+desviacion = 50
+  
+```
+
+## a) P(x>200)
+
+Lo primero que se debe hacer es estandarizar el valor de interes $x= 200$ de la siguiente manera
+```{r}
+x = 200
+z = (x-media)/desviacion
+z
+```
+Cabe resaltar que se puede colocar los valores directos en la funcion $pnorm()$, pero para un mayor entendimiento se manejara hallando Z. 
+Despues se calcular la probabilidad acumulada de que un valor aleatorio sea mayor o igual a z, lo cual se hace con el complemento:
+```{r}
+prob = 1- pnorm(z)
+prob
+```
+La probabilidad de que un individuo elegido al azar tenga un total de surcos en los dedos de 200 o más es del 11%, aproximadamente.
+
+## b) P(x<100)
+
+Para este caso se realiza los mismos pasos del punto anterior
+```{r}
+x = 100
+z = (x - media) / desviacion
+prob = pnorm(z)
+prob
+
+```
+Esto significa que hay una probabilidad del 21.18% de que un individuo elegido al azar tenga menos de 100 surcos en los dedos.
+
+## c) P(100<x<200)
+
+Se realiza los pasos anteriores para $x_1=100$ y $x_2= 200$ y con un paso adicional de restar al ultimo las probabilidades
+de estos.
+```{r}
+x1 = 100
+x2 = 200
+z1 = (x1 - media) / desviacion
+z2 = (x2 - media) / desviacion
+z1
+z2
+prob1 = pnorm(z1)
+prob1
+prob2 = pnorm(z2)
+prob2
+prob_total = prob1-prob2
+prob_total
+```
+Lo que significa que hay un 67% de probabilidad de que un individuo elegido al azar de la población tenga un total de surcos en los dedos entre 100 y 200.
+
+## d) P(200<x<250)
+
+La solucion es lo mismo que el ejercicio anterior
+```{r}
+x1 = 200
+x2 = 250
+z1 = (x1 - media) / desviacion
+z2 = (x2 - media) / desviacion
+z1
+z2
+prob1 = pnorm(z1)
+prob1
+prob2 = pnorm(z2)
+prob2
+prob_total = prob1-prob2
+prob_total
+```
+Lo que significa que hay un 10% de probabilidad de que un individuo elegido al azar de la población tenga un total de surcos en los dedos entre 200 y 250
+
+## e) N = 10000 y P(x >= 200)
+
+Para el calculo se multiplica la poblacion n con la probabilidad $n*(1-pnorm(z))$.
+```{r}
+
+n = 10000 
+x_critico = 200
+n_200surcos = (1-pnorm(x_critico, media, desviacion))*n
+round(n_200surcos)
+
+```
+Por lo tanto, podemos esperar que aproximadamente 1151 personas en una población de 10000 tengan un total de 200 surcos o más en los dedos.
+
+# Punto 2
+
+Para encontrar un intervalo de confianza para la diferencia de las medias verdaderas entre los niveles de TCDD en plasma y tejido adiposo, se sigue los siguientes pasos:
+En primer lugar calcular las diferencias entre $u1 -u2$ pero esta columna ya esta (di).
+
+```{r}
+nivel_tcdd_plasma = c(2.5,3.1,2.1,3.5,3.1,1.8,6.0,3,36,4.7,6.9,3.3,4.6,1.6,7.2,1.8,20,2,2.5,4.1)
+nivel_tcdd_tejido = c(4.9,5.9,4.4,6.9,7,4.2,10,5.5,41,4.4,7.0,2.9,4.6,1.4,7.7,1.1,11,2.5,2.3,2.5)
+di = c(-2.4,-2.8,-2.3,-3.4,-3.9,-2.4,-4.0,-2.5,-5.0,0.3,-0.1,0.4,0,0.2,-0.5,0.7,9,-0.5,0.2,1.6)
+
+datos = data.frame(nivel_tcdd_plasma,nivel_tcdd_tejido,di)
+datos
+```
+Como  segundo paso, se calcual el intervalo de confianza:
+```{r}
+nivel_confianza = 0.95
+t.test(nivel_tcdd_plasma,nivel_tcdd_tejido, alternative = 'two.sided', conf.level = nivel_confianza)
+```
+Los resultados muestran que el intervalo de confianza del 95% para la diferencia entre las medias verdaderas de los niveles de TCDD en plasma y tejido adiposo está entre -6.18 y 4.442. De esto se puede inferir que, en promedio, los niveles de TCDD en plasma son menores que los niveles de TCDD en tejido adiposo. Sin embargo, debido a que el intervalo de confianza incluye el cero, no se puede afirmar con certeza que haya una diferencia significativa entre las medias verdaderas de ambos tipos de muestras.
+Tambien como el valor de $$p_{value} = 0.7421  > \alpha$$, no se descarta la hipotesis y se la toma como verdadera.
+
+
+# Punto 3
+
+En primer lugar se almacena los datos en un data frame para hacer el tratamiento y graficar los datos.
+```{r}
+gastos_publici_x = c(14.2226, 13.9336,15.5040,16.3105,17.4936,19.8906,21.4803,20.4046,21.4776,22.6821,20.9722,23.3538,26.1040,29.1101,27.2418,23.0096,27.6116,32.1111,36.1788,37.5671,33.5069,36.6088,31.1554,32.7752,41.1886,39.9715,39.6866,40.2991,40.9538,41.9323,39.8393)
+volum_ventas_y = c(95.065,97.281,103.159,107.607,113.860,121.153,129.102,132.340,138.663,142.856,143.120,147.928,155.955,164.946,163.921,163.426,172.485,180.519,190.509,196.497,196.024,200.832,196.769,205.341,220.230,228.703,236.500,244.560,254.771,263.683,268.304)
+data = data.frame(gastos_publici_x, volum_ventas_y)
+```
+Con la funcion plot graficamos los datos para ver su comportamiento de una forma visual, dando a entender que tienen una tendencia lineal, pero aun falta hacer mas pruebas. 
+```{r}
+plot(data)
+```
+
+## a) Regresion lineal simple
+
+Se implementa el primer modelo con una regresion lineal simple:
+```{r}
+# Modelo de regresión lineal simple
+model1 = lm(volum_ventas_y ~ gastos_publici_x, data)
+# Mostrar coeficientes y estadísticas del modelo
+summary(model1)
+```
+Como se observa en la tabla anova, la ecuacion del modelo es $$volum_{ventas}=5.3358*gastos_{public}+21.1667$$. Tambien se puede observar que $$p_{valor} = 2*10^{-16} < \alpha $$, dando a entender que hay una asociacion de los datos y el modelo.
+El valor de $R^2 = 0.9371$ tendiendo a 1, lo que dice que los valores pronosticados por el modelo se ajustan a los valores reales observados.
+
+### Pruebas
+
+Con el modelo desarrollado empieza la fase de pruebas.Se muestra en la tabla los valores de $y$, donde se observa los valores pronosticados por el modelo y los reales con el error en cada dato.
+
+```{r}
+datos = data.frame(gastos_publici_x, volum_ventas_y,model1$fitted.values,model1$residuals)
+datos
+```
+Hay valores con un margen de error elevado, como los son los datos de la fila 6,7,19,20, entre otros.
+
+### Validacion de suspuestos
+
+Los errores aleatorios suelen distribuirse normalmente, son independientes o tienen igual varianza (homoscedasticidad). Por lo cual se va a validar con 3 analisis:
+
+
+#### Analisis residuales
+
+Para este test se trabaja con los errores dados en cada punto con respecto los $value_{reales}-value_{modelo}$
+```{r}
+error = datos$model1.residuals
+qqnorm(error, main = 'error graficado', xlab = 'quartil del error',ylab = 'error')
+qqline(error)
+hist(error)
+
+```
+La tendencia de los errores deben alinearse a la linea, pero se observa que estos empiezan a dispersarse por lo cual si pasa esta validacion. El error se acumula entre los valores de -10 a 10.
+```{r}
+plot(error, model1$fitted.values) 
+```
+La grafica no muestra una tendencia lineal o patron, por lo cual pasa este test.
+
+
+#### Prueba de normalidad
+
+Para este test se aplica la prueba de shapiro:
+```{r}
+shapiro.test(error)
+library(lmtest)
+bptest(model1, studentize = FALSE)
+```
+Para pasar la prueba de Shapiro el valor de $p_{valor}>\alpha$ y para este caso $0.504 > 0.05$, por lo cual pasa este test. Para pasar la prueba de Breush Pagan el valor de $p_{valor}>\alpha$ y para este caso $0.0008536 < 0.05$, por lo cual NO pasa este test. 
+
+#### Prueba de Homocedasticidad 
+
+Para este test, se aplica la prueba de Durvin Wattson.
+```{r}
+dwtest(model1, alternative='two.sided')
+```
+Para pasar esta prueba $p_{valor}>\alpha$ y para este caso $0.0003002 < 0.05$, por lo cual No pasa este test.
+
+### Conclusión 
+
+Este modelo no pasa al no cumplir con los requerimientos de varios test planteados.
+
+
+
+
+
+## b) Regresion polinomica grado 2
+
+Se implementa el segundo modelo con una regresion polinomica de grado dos:
+
+```{r}
+model2 = lm(volum_ventas_y ~ gastos_publici_x + I(gastos_publici_x^2), data)
+summary(model2)
+
+```
+Como se observa en la tabla anova, la ecuacion del modelo es $$volum_{ventas}=0.02715*gastos_{public}^2+3.78618*gastos_{public}+21.1667$$. Tambien se puede observar que $P_{valor} = 2.2*10^{-16} < \alpha $, dando a entender que hay una asociacion de los datos y el modelo.
+El valor de $R^2 = 0.9383$ tendiendo a 1, lo que dice que los valores pronosticados por el modelo se ajustan a los valores reales observados.
+
+### Pruebas
+
+Con el modelo desarrollado empieza la fase de pruebas.Se muestra en la tabla los valores de $y$, donde se observa los valores pronosticados y los reales con el error en cada dato.
+
+```{r}
+datos = data.frame(gastos_publici_x, volum_ventas_y,model2$fitted.values,model2$residuals)
+datos
+```
+Hay valores con un margen de error elevado, como los son los datos de la fila 6,7,16,19,30, entre otros.
+
+
+### Validacion de suspuestos
+
+Los errores aleatorios suelen distribuirse normalmente, son independientes o tienen igual varianza (homoscedasticidad). Por lo cual se va a validar con 3 analisis:
+
+
+#### Analisis residuales
+
+Para este test se trabaja con los errores dados en cada punto con respecto los $value_{reales}-value_{modelo}$
+```{r}
+error = datos$model2.residuals
+qqnorm(error, main = 'error graficado', xlab = 'quartil del error',ylab = 'error')
+qqline(error)
+hist(error)
+```
+La tendencia de los errores deben alinearse a la linea, pero se observa que estos empiezan a dispersarse por lo cual si pasa esta validacion. El error se acumula entre los valores de -10 a 10.
+
+```{r}
+plot(error, model2$fitted.values) 
+```
+La grafica no muestra una tendencia lineal o patron, por lo cual pasa este test.
+
+#### Prueba de normalidad 
+
+Para este test se aplica la prueba de shapiro:
+
+```{r}
+shapiro.test(error)
+library(lmtest)
+bptest(model2, studentize = FALSE)
+```
+
+Para pasar la prueba de Shapiro el valor de $p_{valor}>\alpha$ y para este caso $0.5064 > 0.05$, por lo cual pasa este test, los errores se distriuyen de manera normal. Para pasar la prueba de Breush Pagan el valor de $p_{valor}>\alpha$ y para este caso $0.005885 > 0.05$, por lo cual pasa este test, los errores en varianza son constantes. 
+
+#### Prueba de Homocedasticidad 
+
+Para este test, se aplica la prueba de Durvin Wattson.
+
+```{r}
+dwtest(model2, alternative='two.sided')
+```
+
+Para pasar esta prueba $p_{valor}>\alpha$ y para este caso $0.0005566 < 0.05$, por lo cual NO pasa este test, el error es dependiente.
+
+
+### Conclusión 
+
+Este modelo no pasa al no cumplir la prueba de Homocedasticidad, en donde el error es dependiente.
+
+
+
+
+
+
+## c) Regresión con transformación logarítmica
+
+Se implementa el ultimo modelo con una transformacion logaritmica:
+
+```{r}
+model3 = lm(log(volum_ventas_y) ~ gastos_publici_x, data)
+summary(model3)
+
+```
+Como se observa en la tabla anova, la ecuacion del modelo es $$log(volum_{ventas})=0.031948*gastos_{public}+4.201071$$. Tambien se puede observar que $P_{valor} = 2.2*10^{-16} < \alpha $, dando a entender que hay una asociacion de los datos y el modelo.
+El valor de $R^2 = 0.9458$ tendiendo a 1, lo que dice que los valores pronosticados por el modelo se ajustan a los valores reales observados.
+
+### Pruebas
+
+Con el modelo desarrollado empieza la fase de pruebas.Se muestra en la tabla los valores de $y$, donde se observa los valores pronosticados y los reales con el error en cada dato.
+
+```{r}
+datos = data.frame(gastos_publici_x, log(volum_ventas_y),model3$fitted.values,model3$residuals)
+datos
+```
+Hay valores con un margen de error relativamente pequeño.
+
+### Validacion de suspuestos
+
+Los errores aleatorios suelen distribuirse normalmente, son independientes o tienen igual varianza (homoscedasticidad). Por lo cual se va a validar con 3 analisis:
+
+
+#### Analisis residuales
+
+Para este test se trabaja con los errores dados en cada punto con respecto los $value_{reales}-value_{modelo}$
+
+```{r}
+error = datos$model3.residuals
+qqnorm(error, main = 'error graficado', xlab = 'quartil del error',ylab = 'error')
+qqline(error)
+hist(error)
+```
+La tendencia de los errores deben alinearse a la linea y es el patron que comienza a seguir, por lo cual si pasa esta validacion. El error se acumula entre los valores de +-0.05.
+
+```{r}
+plot(error, model3$fitted.values) 
+```
+La grafica no muestra una tendencia lineal o patron, por lo cual pasa este test.
+
+#### Prueba de normalidad
+
+Para este test se aplica la prueba de shapiro:
+
+```{r}
+shapiro.test(error)
+library(lmtest)
+bptest(model3, studentize = FALSE)
+```
+Para pasar la prueba de Shapiro el valor de $p_{valor}>\alpha$ y para este caso $0.8808 > 0.05$, por lo cual pasa este test, los errores se distriuyen de manera normal. Para pasar la prueba de Breush Pagan el valor de $p_{valor}>\alpha$ y para este caso $0.6835 > 0.05$, por lo cual pasa este test, los errores en varianza son constantes. 
+
+#### Prueba de Homocedasticidad 
+
+Para este test, se aplica la prueba de Durvin Wattson:
+
+```{r}
+dwtest(model3, alternative='two.sided')
+```
+Para pasar esta prueba $p_{valor}>\alpha$ y para este caso $0.002796 < 0.05$, por lo cual NO pasa este test, el error es dependiente.
+
+
+### Conclusión 
+
+Este modelo no pasa al no cumplir la prueba de Homocedasticidad, en donde el error es dependiente.
+
+## Comparacion de modelos
+
+La AIC (Akaike Information Criterion) es una medida utilizada en la selección de modelos estadísticos que tiene en cuenta tanto la bondad de ajuste del modelo como la complejidad del mismo. Es una herramienta que permite comparar distintos modelos y elegir el que mejor se ajusta a los datos, siendo la opción con menor valor de AIC la preferida. Para el caso segun esta metrica seria el modelo 3, que se basa en una transformacion logaritmica.
+
+```{r}
+# Comparación de modelos
+AIC(model1, model2, model3)
+
+```
+En las pruebas realizadas los modelos mas completos y que pasaron la mayoria de pruebas son el modelo 3 (logaritmico) y el modelo 2 (polinomico), y dando unos mejore valores de correlacion.
+Asi se escoger el menos peor de estos modelos seria el modelo 3.
+
+```{r}
+library(ggplot2)
+ggplot(datos, aes(x=gastos_publici_x, y=volum_ventas_y))+
+  geom_point()+
+  geom_smooth(method = 'lm', formula = y~x, se = FALSE, col= 'red' )+
+  geom_smooth(method = 'lm', formula = y~x+I(x^2), se = FALSE, col= 'blue' )+
+  geom_smooth(method = 'lm', formula = log(y)~x, se = FALSE, col= 'yellow' )+
+  theme_light()
+```
+Por ultimo se muestra los modelos creados y analizados para este ejercicio. Algo que falto decir es que falto hacer una conversion a la inversa para tener los datos del modelo 3 en escala normal y no logaritmica.
+
+# punto 4
+
+Como primer paso, se hace un almacenamiento de la informacion y se grafica la informacion para dar una aproximacion de las variables y ver cual puede tener una tendencia lineal.
+```{r}
+y = c(25.5,31.2,25.9,38.4,18.4,26.7,26.4,25.9,32.0,25.2,39.7,35.7,26.5)
+x1 = c(1.74,6.32,6.22,10.52,1.19,1.22,4.10,6.32,4.08,4.15,10.15,1.72,1.70)
+x2 = c(5.30,5.42,8.41,4.63,11.60,5.85,6.62,8.72,4.42,7.60,4.83,3.12,5.30)
+x3 = c(10.80,9.40,7.20,8.50,9.40,9.90,8,9.10,8.70,9.20,9.40,7.60,8.20)
+datos = data.frame(y,x1,x2,x3)
+datos
+```
+
+```{r}
+plot(datos)
+```
+Segun lo visto en la grafica, no se ve alguna tendencia lineal en los datos.
+
+El código define los datos para el análisis de regresión lineal con las 3 variables independientes. Luego, crea un modelo de regresion multiple utilizando la función lm. La función summary se utiliza para ver el resumen estadístico del modelo.
+```{r}
+model = lm(y ~ x1 + x2 + x3, data = datos)
+summary(model)
+```
+La ecuaion seria la siguiente $$y = 1.0161*x_1-1.8616*x_2-0.3433*x_3+39.1573$$
+Se tiene un correlacion de datos con el modelo de $R^2=0.9117$.
+
+Se realiza las pruebas y validacion de supuestos para ver el estado del modelo.
+```{r}
+error = model$residuals
+qqnorm(error, main = 'error graficado', xlab = 'quartil del error',ylab = 'error')
+qqline(error)
+hist(error)
+shapiro.test(error)
+dwtest(model, alternative='two.sided')
+```
+El modelo pasa las pruebas al haber una tendencia lineal del error de los datos, y Shapiro y Durvin son mayo a alpha.
+
+## Ajuste del modelo
+
+Como se requiere saber que variables se puede retirar, se va a utilizar dos metodos.
+Para hallar el modelo reducido vamos a utilizar dos formas diferentes; (i) el metodo 1 uno con una libreria de multicolinealidad y (ii) el metodo 2 con los una libreria de correlacion.
+
+### Metodo 1
+
+La libreria car se carga para usar la función vif, que calcula el factor de inflación de varianza para cada variable en el modelo. Un VIF alto indica multicolinealidad con las otras variables, lo que puede afectar la interpretación del modelo. En este caso, $x1$ tiene un alto VIF y se elimina del modelo.
+
+```{r}
+library(car)
+vif(model) 
+```
+Se crea un nuevo modelo lm denominado model2, sin la variable x1. La función summary se utiliza nuevamente para ver el resumen estadístico del nuevo modelo.
+```{r}
+model2 = lm(y ~ x2 + x3, data = datos)
+summary(model2)
+```
+La ecuaion seria la siguiente $$y = -2.0674*x_2-0.7890*x_3+49.0541$$
+Se realiza las pruebas y validacion de supuestos para ver el estado del modelo.
+```{r}
+error = model2$residuals
+qqnorm(error, main = 'error graficado', xlab = 'quartil del error',ylab = 'error')
+qqline(error)
+hist(error)
+shapiro.test(error)
+dwtest(model2, alternative='two.sided')
+```
+Pasa las pruebas de Shapiro y Durvin pero se tiene un $R^2$ muy bajo.
+
+
+### Metodo 2
+
+Se va a realizar un ajuste del modelo por lo cual se va a calcular la correlacion de $y$ respecto a $x_i$. Se eliminara la variable que tenga menor correlacion.
+```{r}
+r_x1 = cor(x1,y)
+r_x1
+r_x2 = cor(x2,y)
+r_x2
+r_x3 = cor(x3,y)
+r_x3
+```
+Como se puede observar el que maneja una menor correlacion es la variable $x_2$, por lo cual la eliminamos  $x_2$del modelo y generamos un nuevo modelo.
+```{r}
+model3 = lm(y ~ x1 + x3, data = datos)
+summary(model3)
+```
+La ecuaion seria la siguiente $$y = 1.2083*x_1-0.5742*x_3+28.6123$$
+Se tiene un correlacion de datos con el modelo de $R^2=0.436$, siendo muy bajo.
+
+Se realiza las pruebas y validacion de supuestos para ver el estado del modelo.
+```{r}
+error = model3$residuals
+qqnorm(error, main = 'error graficado', xlab = 'quartil del error',ylab = 'error')
+qqline(error)
+hist(error)
+shapiro.test(error)
+dwtest(model3, alternative='two.sided')
+```
+El modelo pasa las pruebas al haber una tendencia lineal del error de los datos, y Shapiro y Durvin son mayo a alpha.
+
+## Conclusion
+
+Se aplicaron dos metodologias distintas y la que da un mejor modelo eliminando una variable independiente es la metodologia 1, en el que genera un mejor $R_2$ y pasa los test.

@@ -1,0 +1,70 @@
+    title Cotizacion ClienteController
+    autoactivation on
+
+    actor Recepcionista
+    participant CotizacionComponent
+    participant HttpClient
+    participant CotizacionController
+    participant CotizacionLogica
+    participant ClienteController
+    participant MecanicoController
+    participant ProductoController
+    participant ServicioController
+    participant CotizacionRepository
+    participant CUController
+
+    database BD
+
+
+    Recepcionista ->CotizacionComponent : btnGenerarCotizacion()
+    CotizacionComponent->CotizacionComponent:validarCampos()
+    CotizacionComponent->HttpClient:prepararInformacion()
+    deactivate CotizacionComponent
+    HttpClient->CotizacionController:EnviarDatos()
+    alt ClienteExiste
+    CotizacionController ->CotizacionLogica : Cliente: buscarCliente()
+    loop buscarCliente
+
+    CotizacionLogica -> ClienteController : getCliente()
+    ClienteController-->CotizacionLogica:cliente
+
+    end
+    else ClienteNoExiste
+    CotizacionLogica-->CotizacionController: noExisteCliente
+    CotizacionController->CotizacionLogica:crearCliente()
+    CotizacionLogica->*NewCliente: <<create>>
+    NewCliente-->CotizacionLogica:Cliente
+    deactivate CotizacionLogica
+    end
+    alt MecanicoExiste
+    CotizacionController ->CotizacionLogica: Mecanico: buscarMecanico()
+    loop buscarMecanico
+    CotizacionLogica->MecanicoController : getMecanico()
+    end
+    MecanicoController-->CotizacionLogica: mecanico
+    else MecanicoNoExiste
+    CotizacionLogica-->CotizacionController: noExisteMecanico
+    CotizacionController->CotizacionLogica: adicionarMecanico()
+    CotizacionLogica->*newMecanico:<<create>>
+    newMecanico-->CotizacionLogica:mecanico
+    deactivate CotizacionLogica
+    end
+
+    CotizacionController ->CotizacionLogica: registrarCotizacion()
+    CotizacionLogica ->MecanicoController: chequeoPreliminarVehiculo()
+
+    MecanicoController -->CotizacionLogica: informeEstadoVehiculo
+    CotizacionLogica ->CotizacionLogica: validacionProdYServ()
+    loop allServYProd
+    CotizacionLogica-> ProductoController: getProductoController()
+    ProductoController -->CotizacionLogica: ProductoController
+    CotizacionLogica-> ServicioController: getProductoController()
+    ServicioController -->CotizacionLogica: servicio
+    end
+    CotizacionLogica-->CotizacionLogica:DatosCorrecto
+    CotizacionLogica-->*Cotizacion:<<create>>
+    Cotizacion --> CotizacionLogica:infoCotizacion
+    CotizacionLogica-->CotizacionController: registroExitoso
+    CotizacionController -->HttpClient: requestCotizacion
+    HttpClient-->CotizacionComponent: request
+    CotizacionComponent-->Recepcionista:mostrarInfoCotizacion

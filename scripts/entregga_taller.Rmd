@@ -1,0 +1,23 @@
+---
+title: "Practica II"
+author: "Robinson Aldair Cuayal"
+date: "2023-03-11"
+output: pdf_document
+lang: es-ES
+toc: TRUE
+---
+
+\newpage
+
+# Punto 1
+
+Los datos de este ejercicio son:
+
+```{r}
+media = 140
+desviacion = 50
+```
+
+
+# Punto 2
+
