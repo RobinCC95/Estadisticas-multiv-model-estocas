@@ -64,4 +64,31 @@ plot(model4)
 
 
 
+## graficamos 
+library(tidyverse)
+library(ISLR)
+library(ggplot2)
+datos = Default
+# Se recodifican los niveles No, Yes a 1 y 0
+datos <- datos %>%
+  select(default, balance) %>%
+  mutate(default = recode(default,
+                          "No"  = 0,
+                          "Yes" = 1))
+head(datos)
+
+
+# Ajuste de un modelo logístico.
+modelo_logistico = glm(default ~ balance, data = datos, family = "binomial")
+# x11()
+# Representación gráfica del modelo.
+ggplot(data = datos, aes(x = balance, y = default)) +
+  geom_point(aes(color = as.factor(default)), shape = 1) +
+  stat_function(fun = function(x){predict(modelo_logistico,
+                                          newdata = data.frame(balance = x),
+                                          type = "response")}) +
+  theme_bw() +
+  labs(title = "Regresión logística",
+       y = "Probabilidad default") +
+  theme(legend.position = "none")
 

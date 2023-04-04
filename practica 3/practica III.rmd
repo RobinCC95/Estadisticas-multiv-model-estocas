@@ -24,7 +24,9 @@ library(readxl)
 datos = data.frame(read_excel("dataset_ejer1.xlsx"))
 dim(datos)
 ```
-Con la carga de los datos, como segundo paso se implementa el modelo de regresion logistica
+Con la carga de los datos, como segundo paso se implementa el modelo de regresion logistica. Cabe resaltar que 
+es importante especificar el tipo de enlace en la modelación logística ya que afecta directamente la interpretación 
+de los coeficientes del modelo y los resultados obtenidos.
 ```{r}
 # Crear la regresión logística
 modelo_logistico = glm(
@@ -32,23 +34,27 @@ modelo_logistico = glm(
   data = datos,
   family = binomial(link = "logit")
 )
+#modelo general
+summary(modelo_logistico)
+
 # Obtener la razón de grados de probabilidad
 coeficientes = coef(modelo_logistico)
-exp(coeficientes["Nivel_plomo_suelo"])
-
+razon_encontrada = exp(coeficientes["Nivel_plomo_suelo"])
+razon_encontrada
 # Compara la razón de grados de probabilidad contra la que obtuvieron los autores (14.25)
-
+razon_autores = 14.25
 # Realizar la prueba de significancia
 summary(modelo_logistico)$coefficients["Nivel_plomo_suelo", "Pr(>|z|)"]
 
 ```
 
+## Preguntas
 
 a) La variable dependiente es la "Categoria_del_Individuo".
 b) La variable independiente es la "Nivel_plomo_suelo".
-c) Hipótesis nula: No hay relación entre el nivel de plomo en el suelo y la categoría del individuo. 
+c) Hipótesis nula: No hay relación entre el nivel de plomo en el suelo y la categoría del individuo. \n
 Hipótesis alternativa: Existe una relación entre el nivel de plomo en el suelo y la categoría del individuo.
-d) La hipótesis nula es rechazada debido a que el valor de p obtenido (1.59e-08) es menor al nivel de 
+d) La hipótesis nula es rechazada debido a que el valor de p obtenido $4.601328*10^{-07}$ es menor al nivel de 
 significancia del 0.05 establecido. Esto indica que hay suficiente evidencia para concluir que el nivel de plomo 
 en el suelo es un factor significativo para predecir los niveles altos de plomo en la sangre de los niños.
 e) El objetivo más relevante es predecir los niveles altos de plomo en la sangre de los niños, ya que esto puede 
@@ -56,11 +62,17 @@ tener graves consecuencias en su salud. Aunque la estimación de parámetros es 
 entre las variables, la predicción tiene una mayor importancia práctica.
 f) La población muestreada son niños expuestos al plomo en la ciudad donde se realizó el estudio.
 g) La población objetivo son todos los niños expuestos al plomo, independientemente de su ubicación geográfica.
-h) La "Nivel_plomo_suelo" está relacionada directamente con la "Categoria_del_Individuo", ya que aumentos en la 
+h) La variable "Nivel_plomo_suelo" está relacionada directamente con la "Categoria_del_Individuo", ya que aumentos en la 
 primera variable son predictores de una mayor proporción de casos en la segunda variable.
+```{R}
+r = cor(datos)
+nab = 1-det(r)
+nab
+plot(modelo_logistico)
+```
 i) La ecuación de regresión es: y = b0 + b1x, donde "y" es la "Categoria_del_Individuo", "x" es la "Nivel_plomo_suelo", 
 b0 es el intercepto y b1 es la pendiente. En este caso, la ecuación sería: y = -1.170 + 0.000839x.
-j) La razón de grados de probabilidad (1.127), el valor de p (1.59e-08) y los coeficientes (b0 = -1.170, b1 = 0.000839) 
+j) La razón de grados de probabilidad (1.127), el valor de p (4.601328e-07) y los coeficientes (b0 = -1.170, b1 = 0.000839) 
 son estadísticas relevantes en este análisis.
 k) La variable "Categoria_del_Individuo" es categórica binaria (0 para control y 1 para caso), mientras que la variable 
 "Nivel_plomo_suelo" es cuantitativa. 
