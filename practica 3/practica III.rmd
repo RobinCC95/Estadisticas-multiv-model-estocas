@@ -23,6 +23,7 @@ dataframe en R.
 library(readxl)
 datos = data.frame(read_excel("dataset_ejer1.xlsx"))
 dim(datos)
+head(datos)
 ```
 Con la carga de los datos, como segundo paso se implementa el modelo de regresion logistica. Cabe resaltar que 
 es importante especificar el tipo de enlace en la modelación logística ya que afecta directamente la interpretación 
@@ -48,6 +49,26 @@ summary(modelo_logistico)$coefficients["Nivel_plomo_suelo", "Pr(>|z|)"]
 
 ```
 
+La razón de grados de probabilidad obtenida es de 1.002, lo que indica que por cada diez veces que aumenta el nivel de
+plomo en la tierra, la proporción relativa de casos con respecto a los grupos de control aumenta en un 0.1. 
+Este resultado difiere del obtenido por los autores del estudio (14.25).
+El valor de p obtenido es $4.601328*10^{-07}$, lo que indica que el nivel de plomo en la tierra es un factor significativo para 
+predecir los niveles altos de plomo en la sangre de los niños. \n
+Las grafica del modelo es el siguiente
+```{R}
+library(ggplot2)
+ggplot(data = datos, aes(x = Nivel_plomo_suelo, y = Categoria_del_Individuo)) +
+  geom_point(aes(color = as.factor(Categoria_del_Individuo)), shape = 1) +
+  stat_function(fun = function(x){predict(modelo_logistico,
+                                          newdata = data.frame(Nivel_plomo_suelo = x),
+                                          type = "response")}) +
+  theme_bw() +
+  labs(title = "Regresión logística",
+       y = "Probabilidad plomo en niños") +
+  theme(legend.position = "none")
+
+```
+
 ## Preguntas
 
 a) La variable dependiente es la "Categoria_del_Individuo".
@@ -63,28 +84,35 @@ entre las variables, la predicción tiene una mayor importancia práctica.
 f) La población muestreada son niños expuestos al plomo en la ciudad donde se realizó el estudio.
 g) La población objetivo son todos los niños expuestos al plomo, independientemente de su ubicación geográfica.
 h) La variable "Nivel_plomo_suelo" está relacionada directamente con la "Categoria_del_Individuo", ya que aumentos en la 
-primera variable son predictores de una mayor proporción de casos en la segunda variable.
+primera variable son predictores de una mayor proporción de casos en la segunda variable,
+al examinar la significación estadística de los coeficientes de la regresión y de las variables incluidas al ser significativo y positivo.
+Los datos no tienen una alta correlacion segun el Nab pero al tener los resultado del modelo de regresion logistica
+hay que tener en cuenta el primer enunciado.
 ```{R}
 r = cor(datos)
 nab = 1-det(r)
 nab
-plot(modelo_logistico)
 ```
-i) La ecuación de regresión es: y = b0 + b1x, donde "y" es la "Categoria_del_Individuo", "x" es la "Nivel_plomo_suelo", 
-b0 es el intercepto y b1 es la pendiente. En este caso, la ecuación sería: y = -1.170 + 0.000839x.
-j) La razón de grados de probabilidad (1.127), el valor de p (4.601328e-07) y los coeficientes (b0 = -1.170, b1 = 0.000839) 
-son estadísticas relevantes en este análisis.
-k) La variable "Categoria_del_Individuo" es categórica binaria (0 para control y 1 para caso), mientras que la variable 
-"Nivel_plomo_suelo" es cuantitativa. 
-La razón de grados de probabilidad (también conocido como odds ratio) es una medida de la asociación entre dos eventos. 
-En este caso, mide el cambio relativo en la proporción de casos con respecto a los grupos de control debido a un 
-aumento en la variable independiente. El valor de p indica la probabilidad de obtener un valor del coeficiente de 
-regresión tan extremo como el que se observó, si no hay relación entre las variables. 
-Los coeficientes b0 y b1 se utilizan para construir la ecuación de regresión, que permite estimar la respuesta de 
-la variable dependiente a diferentes valores de la variable independiente.
+i) La ecuación de regresión es: $y = b0 + b1x$, donde "y" es la "Categoria_del_Individuo", "x" es la "Nivel_plomo_suelo", 
+b0 es el intercepto y b1 es la pendiente. En este caso, la ecuación sería: 
+$Categoria_del_Individuo = -1.516206 + 0.002743*Nivel_plomo_suelo$.
+j) Para realizar otro analisis adicionando valores puede ser el del sexo que pueden tomar como masculino (1) y 
+femenino (0).
+k) La variable "Categoria_del_Individuo" es categórica binaria (0 para control y 1 para caso), mientras 
+que la variable "Nivel_plomo_suelo" es cuantitativa. 
+La razón de grados de probabilidad (también conocido como odds ratio) es una medida de la asociación 
+entre dos eventos.
+La variable sexo tambien es categórica binaria.
+diferentes valores de la variable independiente.
+l) Con base en el punto (j) donde se le puede dar valores de nuestra parte a la variable de sexo de los niños, 
+se diseña el modelo modelo logistico para el siguiente analisis estadistico.
+```{R}
+#codigo modelo 2 aqui
+```
 
 
 # Punto 2
+
 
 ```{r}
 library(readxl)
