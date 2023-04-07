@@ -344,9 +344,9 @@ summary(modelo)
 ```
 
 Para interpretar los resultados del modelo, es importante mirar la estimación del coeficiente de regresión. En este caso,
-el coeficiente de regresión para la variable predictora, desemp_esc, es positivo, lo que sugiere que a medida que aumenta
+el coeficiente de regresión para la variable predictora, desemp_esc, es positivo (3.2677), lo que sugiere que a medida que aumenta
 el nivel de desempeño escolar, la probabilidad de estar en el estado de nutrición deseado (estado_nutric = bueno) aumenta. 
-Además, el valor p asociado con la variable predictora es menor que 0,05, lo que indica que la relación entre la variable 
+Además, el valor p asociado (2e-16) con la variable predictora es menor que 0.05, lo que indica que la relación entre la variable 
 predictora y la variable de respuesta es estadísticamente significativa.
 El numero de iteraciones fueron 4 y la medidad de calidad relativa AIC es de 485.5 para una comparacion con otros modelos.
 El grafico del modelo es el siguiente:
@@ -368,6 +368,51 @@ supuestos que se deben tener en cuenta al interpretar los resultados.
 
 # Punto 5
 
+Para resolver este problema, se utiliza la matriz de transición de probabilidad. 
+Primero, se  define los estados como 1, 2 y 3 para Tigo, Claro y Movistar, respectivamente.
+Luego, se crea una matriz de transición de probabilidad que represente las probabilidades de transición 
+de un estado a otro.
+Para luego crear una matriz de Markov que facilita la transicion de probabilidad de un estado a otro.
+
+## Preguntas
+
+a. Se quiere conocer cuál es la probabilidad de permanencia en la primera y segunda corrida.  
+
 ```{r}
-cat('hola')
+# Definición de las probabilidades actuales y estados
+p_act = c(0.4, 0.25, 0.35)
+estados = c("Tigo", "Claro", "Movistar")
+
+# Definición de la matriz de transición
+trans_mat = matrix(c(0.6, 0.2, 0.2, 0.3, 0.5, 0.2, 0.3, 0.3, 0.4), nrow = 3, byrow = TRUE)
+
+# Markov
+library(markovchain)
+mc = new("markovchain", states = estados, transitionMatrix = trans_mat, name = "Compañías de Telefonía")
+summary(mc)
+
+# Probabilidad primera corrida
+p_1 = p_act * mc
+p_1
+
+# Probabilidad segunda corrida
+p_2 = p_1*(mc)^2
+p_2
+```
+
+Se puede observar que la probabilidad de permanencia en Claro aumenta ligeramente en la segunda corrida,
+mientras que la probabilidad de permanencia en Movistar disminuye y la probabilidad de permanencia en Tigo se 
+mantiene relativamente estable.
+La distribucion estacionaria hacia donde tiende cada iteracion es
+```{r}
+# Para hallar la distribucion estacionaria 
+dist_estacion = steadyStates(mc)
+dist_estacion
+```
+
+b. Realizar el grafico
+El gráfico generado muestra el grafo de la matriz de transicion con las probabilidades de transición como aristas y el nombre de cada estado 
+como vertice.
+```{R}
+plot(mc)
 ```
