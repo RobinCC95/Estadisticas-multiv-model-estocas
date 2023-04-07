@@ -320,7 +320,8 @@ dist_mahalanobis_media
 
 # Punto 4
 
-Para este ejercicio se pide un hacer una regresion logistica, por ello se empieza replicando los datos de la 
+Para este ejercicio se pide un hacer una regresion logistica de una tabla que realciona las estado nutricional
+con su desempeño escolar, por ello se empieza replicando los datos de la 
 tabla.
 ```{r}
 # Desempeño_escolar : deficiente -> 0   satisfactorio -> 1
@@ -331,6 +332,39 @@ estado_nutric = c(rep(0,105), rep(0,80),rep(1,15), rep(1,300))
 datos = data.frame(desemp_esc, estado_nutric)
 table(datos)
 ```
+Se genera el modelo de regresion logistica para los datos de la tabla. se toma como variable dependiente el estado de nutricion
+y como independiente el desempeño escolar. 
+```{R}
+
+modelo = glm(estado_nutric~desemp_esc,
+  data = datos,
+  family = binomial(link = "logit")
+)
+summary(modelo)
+```
+
+Para interpretar los resultados del modelo, es importante mirar la estimación del coeficiente de regresión. En este caso,
+el coeficiente de regresión para la variable predictora, desemp_esc, es positivo, lo que sugiere que a medida que aumenta
+el nivel de desempeño escolar, la probabilidad de estar en el estado de nutrición deseado (estado_nutric = bueno) aumenta. 
+Además, el valor p asociado con la variable predictora es menor que 0,05, lo que indica que la relación entre la variable 
+predictora y la variable de respuesta es estadísticamente significativa.
+El numero de iteraciones fueron 4 y la medidad de calidad relativa AIC es de 485.5 para una comparacion con otros modelos.
+El grafico del modelo es el siguiente:
+```{R}
+library(ggplot2)
+ggplot(data = datos, aes(x = desemp_esc, y = estado_nutric)) +
+  geom_point(aes(color = as.factor(estado_nutric)), shape = 1) +
+  stat_function(fun = function(x){predict(modelo,
+                                          newdata = data.frame(desemp_esc = x),
+                                          type = "response")}) +
+  theme_bw() +
+  labs(title = "Regresión logística",
+       y = "Probabilidad estado nutricional") +
+  theme(legend.position = "none")
+```
+En resumen, el análisis de resultados muestra que la variable predictora, desemp_esc, parece ser un predictor 
+significativo del estado de nutrición deseado. Sin embargo, como con cualquier modelo estadístico, hay limitaciones y 
+supuestos que se deben tener en cuenta al interpretar los resultados.
 
 # Punto 5
 
