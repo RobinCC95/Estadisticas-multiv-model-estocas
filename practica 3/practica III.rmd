@@ -228,10 +228,15 @@ datos_regresion2 = data.frame(acp$scores[,1], olmos$X2)
 names(datos_regresion2) = c('cargasX1', 'datosX2')
 model_X2 = lm(datos_regresion2$datosX2~datos_regresion2$cargasX1)  
 summary(model_X2)
+#para la varible X3
+datos_regresion3 = data.frame(acp$scores[,1], olmos$X3)
+names(datos_regresion3) = c('cargasX1', 'datosX3')
+model_X3 = lm(datos_regresion3$datosX3~datos_regresion3$cargasX1)  
+summary(model_X3)
 ```
 Como se puede ver hay una alta correlacion entre los datos y el nuevo componente 1 PCA, el cual explica el 91% de los datos, 
 por lo cual cuando se realiza regresion lineal con cada una de las variables de los datos da una alta correlacion y con un 
-$R^2$ mayor al 90%. Solo se hizo modelos lm() hasta la variable 2 los modelos. 
+$R^2$ mayor al 89% a excepcion del X3 que da de un 81%. Solo se hizo modelos lm() hasta la variable 3 los modelos. 
 En conclusión, el análisis de regresión lineal del primer componente principal y sus respectivas variables de carga 
 permite explicar en gran medida la variabilidad de los datos y evidencia la influencia de la variables X1 en la 
 formación del componente. La carga de una variable en un componente principal indica cuánto contribuye esa variable a 
@@ -240,47 +245,91 @@ está relacionada con el componente principal y si existe una relación lineal s
 
 # Punto 3
 
-Se carga los datos
+Para la solucion del ejercicio de distancias entre los datos y correlacion, primero se carga los datos a un excel para ser
+convertido a un dataframe:
 ```{r}
 library(readxl)
-datos <- data.frame(read_excel("dataset_ejer_3.xlsx"))
-dim(datos)
+datos = data.frame(read_excel("dataset_ejer_3.xlsx"))
+datos
 ```
 
 ## Preguntas
 
 a. Calcular la covarianza.
 
+La covarianza es una medida de cómo dos variables se mueven en relación entre sí. Un valor positivo indica que las 
+variables se mueven de manera similar, mientras que un valor negativo indica que las variables se mueven de manera opuesta.
+En este caso, la matriz de covarianza muestra que la mayoría de las variables están positivamente correlacionadas entre sí.
+
 ```{R}
 # Calcular la covarianza
-covarianza <- cov(datos)
-summary(covarianza)
+covarianza = cov(datos)
+covarianza
 ```
 
 b. Calcular la matriz de correlación.
 
+La matriz de correlación es una medida de la fuerza y dirección de la relación lineal entre dos variables.
+Los valores van desde -1 (correlación negativa perfecta) a 1 (correlación positiva perfecta), 
+con 0 indicando que no hay relación. Los datos muestran una fuerte correlación positiva entre X6(O3) y X7(HC) y una 
+correlacion alta correlacion negativa entre X2(Radiación solar) y X5(N02), mientras que las otras variables no 
+tienen una correlación tan fuerte. En el Dispersograma se puede ver como un especie de linealidad de los datos.
+
 ```{R}
 # Calcular la matriz de correlación
-correlacion <- cor(datos)
-summary(correlacion)
+correlacion = cor(datos)
+correlacion
+
+#Dispersograma
+plot(datos)
 ```
 
 c. Calcular las distancias euclidianas y mahalanobis
 
+La distancia euclidiana es una medida de la distancia entre dos puntos en un espacio multidimensional. 
+En este caso, muestra la distancia entre las 10 filas de la tabla en un espacio de 7 dimensiones. 
+La distancia mahalanobis es similar, pero tiene en cuenta la covarianza entre las variables. La distancia euclidiana 
+y mahalanobis producen resultados diferentes en este conjunto de datos pero de la misma forma sirven para 
+clasificar un conjunto de datos.
+
 ```{R}
+# Media 
+datos_media = colMeans(datos)
+
 # Calcular las distancias euclidianas
-dist_euclidianas <- dist(datos, method="euclidean")
-summary(dist_euclidianas)
+dist_euclidianas_indiv = dist(datos, method = "euclidean")
+dist_euclidianas_indiv
 
 # Calcular las distancias mahalanobis
-dist_mahalanobis <- mahalanobis(datos,colMeans(datos),cov(datos))
-summary(dist_mahalanobis)
+dist_mahalanobis = sqrt(mahalanobis(datos,datos_media,covarianza))
+dist_mahalanobis
+```
+
+Para la distancia con uso de la media:
+```{R}
+# Calcular las distancias euclidianas
+dist_euclidianas_media = dist(rbind(datos_media,datos))
+dist_euclidianas_media
+
+# Calcular las distancias mahalanobis
+dist_mahalanobis_media = apply(datos, 1, function(xi) {
+  sqrt(mahalanobis(xi, datos_media, covarianza))
+})
+dist_mahalanobis_media
 ```
 
 # Punto 4
 
+Para este ejercicio se pide un hacer una regresion logistica, por ello se empieza replicando los datos de la 
+tabla.
 ```{r}
-cat('hola')
+# Desempeño_escolar : deficiente -> 0   satisfactorio -> 1
+# Estado nutricional : deficiente -> 0   bueno -> 1
+
+desemp_esc = c(rep(0,105), rep(1,80),rep(0,15), rep(1,300))
+estado_nutric = c(rep(0,105), rep(0,80),rep(1,15), rep(1,300))
+datos = data.frame(desemp_esc, estado_nutric)
+table(datos)
 ```
 
 # Punto 5
