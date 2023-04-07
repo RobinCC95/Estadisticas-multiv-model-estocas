@@ -1,6 +1,6 @@
 #componentes principales
 library(readxl)
-ruta_archivo <- "datos/datosEst.xlsx"
+ruta_archivo <- "datosEst.xlsx"
 datos_excel <- read_excel(ruta_archivo)
 datos_excel
 datos_correl = cor(datos_excel)

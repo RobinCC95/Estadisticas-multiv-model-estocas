@@ -113,12 +113,130 @@ se diseña el modelo modelo logistico para el siguiente analisis estadistico.
 
 # Punto 2
 
-
+En primer lugar, se realiza la carga de los datos que se almacenaron previamente en una hoja excel, para
+luego convertir a un dataframe:
 ```{r}
 library(readxl)
-datos <- data.frame(read_excel("dataset_ejer_2.xlsx"))
-dim(datos)
+olmos <- data.frame(read_excel("dataset_ejer_2.xlsx"))
+dim(olmos)
+head(olmos)
 ```
+
+## Preguntas
+
+a) Realizar el analisis de componenetes principales (PCA) completo con gráficos de cargas.
+
+Antes de realizar un analisis por PCA, hay que tener en cuenta que debe haber una
+alta correlacion entre los datos, porque de lo contrario no tiene sentido realizar
+este analisis.
+```{R}
+r = det(cor(olmos))
+nab = 1-r
+nab
+```
+
+Como se puede observar hay una alta correlacion de los datos ya que el 
+$nab = 0.999 -> aprox= 1$.
+Ya con esta prueba es factible hacer este analisis de PCA. Se comienza con la creacion del modelo PCA, 
+donde esta informacion relevante como varianza y correlacion.
+```{R}
+# Análisis de componentes principales
+acp = princomp(olmos, cor = TRUE)
+summary(acp)
+#grafico de cargas de las variables
+vector_propios = acp$loadings
+#cambio de signo
+acp$loadings[,2] = -acp$loadings[,2]
+acp$scores[,2] = -acp$scores[,2]
+#correlacion entre las componentes y las variables
+desviacion_stand = acp$sdev
+correlacion = sweep(vector_propios[1:7,1:7],2, desviacion_stand, "*" )
+round(correlacion,3)
+
+```
+
+Se realiza el grafico de cargas de en donde para identificar cuál variable tiene más contribución en el gráfico de cargas
+circulares, se debe observar la distancia de cada círculo al origen central del gráfico. Por lo cual todas las variables
+tienen un buen aporte de informacion.
+```{R}
+#grafico de cargas de las variables
+library(MASS)
+eqscplot(correlacion[,1:2], xlim=c(-1,1), ylim=c(-1,1), type = "n")
+abline(h=0,v=0)
+text(correlacion[,1:2],labels=colnames(olmos),cex=0.8)
+symbols(0,0,circles=1, inches=FALSE, add=TRUE)
+biplot(acp, cex=0.75)
+```
+
+b) Cuales variables presentan más similitud.
+
+Segun la tabla, se observa que la variable con mayor similitud es X2 (diametro) y X4 (peso total), con un valor de 
+correlación de 97%. Tambien con una correlacion del 96% se tiene relacion las siguientes parejas (X1,X2), (X4,X5)
+```{R}
+#Variable con mayor similitud
+cor(olmos)
+```
+
+c) Cuantos componentes explican la mayor variabilidad de los datos.
+
+Para conocer cuántos componentes explican la mayor variabilidad de los datos, se usa la función summary() sobre el 
+objeto pca. La salida muestra que el componente 1 explica el 91.25% de la variabilidad. Tambien en el grafico de sedimentacion
+se observo que era la unica componente al superar el 1, por lo cual solo se escoge esta componente.
+```{R}
+summary(acp)
+```
+Se realiza el grafico de sedimentacion en donde se escoge las variables que tengan una varianza mayor a 1.
+```{R}
+#calculo de los valores propios
+val_propios = acp$sdev^2
+plot(1:7, val_propios, type= "b", xlab="componentess", ylab="varianza", 
+main = "sedimentacion")
+```
+
+d) Que grupos de individuos presentan más similitud.
+
+Para conocer los grupos de individuos que presentan mayor similitud se realiza la  grafica de dispersion de los individuos
+y las variables. Segun el grafico se encuentra dos grupos divididos por una linea vertical en el punto 0.
+El gráfico muestra que las dos observaciones están relativamente cercanas entre sí.
+```{R}
+library(psych)
+acp_varimax = principal(olmos, nfactors = 2, rotate = "varimax",scores = TRUE)
+round(cor(olmos, acp_varimax$scores[,1:2]),3)#tabla de comunidades
+biplot(acp_varimax, labels = rownames(olmos), cex= 0.75,  main = "Grafico de dispersion")
+```
+
+e) Realizar un análisis de regresión lineal del componente 1 y sus respectivas variables de carga.
+
+El siguiente grafico ayuda a ver el aporte que tienen cada individuo al componenetes 1.
+```{R}
+plot(acp$scores[,1], type= "n",)
+abline(h=0, v= 0)
+text(acp$scores[,1], 
+labels= rownames(olmos), cex=0.8)
+```
+
+Para realizar el análisis de regresión lineal del componente 1 y su respectiva variables de carga, 
+se crea un data frame con las dos columnas.
+```{R}
+#para la variable X1
+datos_regresion = data.frame(acp$scores[,1], olmos$X1)
+names(datos_regresion) = c('cargasX1', 'datosX1')
+model_X1 = lm(datos_regresion$datosX1~datos_regresion$cargasX1)  
+summary(model_X1)
+#para la varible X2
+datos_regresion2 = data.frame(acp$scores[,1], olmos$X2)
+names(datos_regresion2) = c('cargasX1', 'datosX2')
+model_X2 = lm(datos_regresion2$datosX2~datos_regresion2$cargasX1)  
+summary(model_X2)
+```
+Como se puede ver hay una alta correlacion entre los datos y el nuevo componente 1 PCA, el cual explica el 91% de los datos, 
+por lo cual cuando se realiza regresion lineal con cada una de las variables de los datos da una alta correlacion y con un 
+$R^2$ mayor al 90%. Solo se hizo modelos lm() hasta la variable 2 los modelos. 
+En conclusión, el análisis de regresión lineal del primer componente principal y sus respectivas variables de carga 
+permite explicar en gran medida la variabilidad de los datos y evidencia la influencia de la variables X1 en la 
+formación del componente. La carga de una variable en un componente principal indica cuánto contribuye esa variable a 
+la varianza explicada por ese componente. Al realizar la regresión lineal, puedes analizar cómo la variable original 
+está relacionada con el componente principal y si existe una relación lineal significativa entre ellas.
 
 # Punto 3
 
