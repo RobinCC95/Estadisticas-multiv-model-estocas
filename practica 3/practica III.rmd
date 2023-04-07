@@ -240,10 +240,41 @@ está relacionada con el componente principal y si existe una relación lineal s
 
 # Punto 3
 
+Se carga los datos
 ```{r}
 library(readxl)
 datos <- data.frame(read_excel("dataset_ejer_3.xlsx"))
 dim(datos)
+```
+
+## Preguntas
+
+a. Calcular la covarianza.
+
+```{R}
+# Calcular la covarianza
+covarianza <- cov(datos)
+summary(covarianza)
+```
+
+b. Calcular la matriz de correlación.
+
+```{R}
+# Calcular la matriz de correlación
+correlacion <- cor(datos)
+summary(correlacion)
+```
+
+c. Calcular las distancias euclidianas y mahalanobis
+
+```{R}
+# Calcular las distancias euclidianas
+dist_euclidianas <- dist(datos, method="euclidean")
+summary(dist_euclidianas)
+
+# Calcular las distancias mahalanobis
+dist_mahalanobis <- mahalanobis(datos,colMeans(datos),cov(datos))
+summary(dist_mahalanobis)
 ```
 
 # Punto 4
