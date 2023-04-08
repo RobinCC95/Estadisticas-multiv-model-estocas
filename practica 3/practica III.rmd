@@ -54,7 +54,9 @@ plomo en la tierra, la proporción relativa de casos con respecto a los grupos d
 Este resultado difiere del obtenido por los autores del estudio (14.25).
 El valor de p obtenido es $4.601328*10^{-07}$, lo que indica que el nivel de plomo en la tierra es un factor significativo para 
 predecir los niveles altos de plomo en la sangre de los niños. \n
-Las grafica del modelo es el siguiente
+El ecuación del modelo es el siguiente: 
+$$CategoriaDelIndividuo = 1/{(1+ e ^{-(-1.516206 + 0.002743*NivelPlomoSuelo)})}$$
+Las grafica del modelo es el siguiente:
 ```{R}
 library(ggplot2)
 ggplot(data = datos, aes(x = Nivel_plomo_suelo, y = Categoria_del_Individuo)) +
@@ -93,22 +95,44 @@ r = cor(datos)
 nab = 1-det(r)
 nab
 ```
-i) La ecuación de regresión es: $y = b0 + b1x$, donde "y" es la "Categoria_del_Individuo", "x" es la "Nivel_plomo_suelo", 
+i) La ecuación de regresión es: $y = 1/{(1+ e ^{-(b0 + b1x)})}$, donde "y" es la "Categoria_del_Individuo", "x" es la "Nivel_plomo_suelo", 
 b0 es el intercepto y b1 es la pendiente. En este caso, la ecuación sería: 
-$Categoria_del_Individuo = -1.516206 + 0.002743*Nivel_plomo_suelo$.
-j) Para realizar otro analisis adicionando valores puede ser el del sexo que pueden tomar como masculino (1) y 
-femenino (0).
+$CategoriaDelIndividuo = {1}/{(1+ e ^{-(-1.516206 + 0.002743*NivelPlomoSuelo)})}$.  
+j) Para realizar un analisis estadístico adicional de los valores a los betas del modelo logistico, se obtiene los 
+intervalos de confianza de los coeficientes. 
+Cada fila en la tabla se corresponde con un coeficiente del modelo (intercepto y NivelPlomoSuelo), 
+y cada columna muestra una de las tres medidas de intervalo de confianza: "2.5 %" y "97.5 %" corresponden
+ a la probabilidad de cola baja y alta de la distribución t de Student, respectivamente.
+```{r}
+# Obtener los intervalos de confianza para los coeficientes (betas)
+intervalos_confianza = confint(modelo_logistico)
+intervalos_confianza
+```
+Se puede utilizar los valores estimados y los límites inferior y superior de los intervalos de confianza para interpretar
+los resultados del modelo y hacer inferencias sobre la relación entre la variable independiente y la variable dependiente.
+En general, el intervalo de confianza proporciona una estimación útil de la precisión con la que se ha estimado cada 
+coeficiente en el modelo de regresión logística. Para el caso del modelo encontrado deber ser mayor 95% confianza.
+
 k) La variable "Categoria_del_Individuo" es categórica binaria (0 para control y 1 para caso), mientras 
 que la variable "Nivel_plomo_suelo" es cuantitativa. 
 La razón de grados de probabilidad (también conocido como odds ratio) es una medida de la asociación 
 entre dos eventos.
 La variable sexo tambien es categórica binaria.
 diferentes valores de la variable independiente.
-l) Con base en el punto (j) donde se le puede dar valores de nuestra parte a la variable de sexo de los niños, 
-se diseña el modelo modelo logistico para el siguiente analisis estadistico.
-```{R}
-#codigo modelo 2 aqui
-```
+l) Con base en el punto (j) donde se encontro los intervalos de confianza de los betas.
+Los intervalos de confianza al 95% para los coeficientes del modelo son los siguientes:
+- El coeficiente para la variable Intercepto tiene un intervalo de confianza entre -2.219 y -0.881. 
+Esto significa que, en promedio, si el nivel de plomo en el suelo es cero, entonces la probabilidad 
+de que un individuo esté en la categoría afectada es baja, y aumenta significativamente a medida que 
+aumenta el nivel de plomo.
+
+- El coeficiente para la variable Nivel_plomo_suelo tiene un intervalo de confianza entre 0.002 y 0.004. 
+Esto significa que cuando el nivel de plomo en el suelo se incrementa en una unidad, la probabilidad de 
+que un individuo esté en la categoría afectada aumenta en promedio entre 0.002 y 0.004.
+
+En general, el modelo nos indica que el nivel de plomo en el suelo es un factor importante en la predicción de 
+si un individuo estará o no en la categoría afectada. Los intervalos de confianza nos ayudan a tener una idea de 
+la precisión de las estimaciones.
 
 
 # Punto 2
@@ -272,8 +296,8 @@ b. Calcular la matriz de correlación.
 La matriz de correlación es una medida de la fuerza y dirección de la relación lineal entre dos variables.
 Los valores van desde -1 (correlación negativa perfecta) a 1 (correlación positiva perfecta), 
 con 0 indicando que no hay relación. Los datos muestran una fuerte correlación positiva entre X6(O3) y X7(HC) y una 
-correlacion alta correlacion negativa entre X2(Radiación solar) y X5(N02), mientras que las otras variables no 
-tienen una correlación tan fuerte. En el Dispersograma se puede ver como un especie de linealidad de los datos.
+correlacion alta negativa entre X2(Radiación solar) y X5(N02), mientras que las otras variables no 
+tienen una correlación tan fuerte. En el Dispersograma se puede ver como un especie de linealidad de las variables mencionadas.
 
 ```{R}
 # Calcular la matriz de correlación
@@ -320,7 +344,7 @@ dist_mahalanobis_media
 
 # Punto 4
 
-Para este ejercicio se pide un hacer una regresion logistica de una tabla que realciona las estado nutricional
+Para este ejercicio se pide un hacer una regresion logistica de una tabla que relaciona los estados nutricional
 con su desempeño escolar, por ello se empieza replicando los datos de la 
 tabla.
 ```{r}
@@ -348,6 +372,7 @@ el coeficiente de regresión para la variable predictora, desemp_esc, es positiv
 el nivel de desempeño escolar, la probabilidad de estar en el estado de nutrición deseado (estado_nutric = bueno) aumenta. 
 Además, el valor p asociado (2e-16) con la variable predictora es menor que 0.05, lo que indica que la relación entre la variable 
 predictora y la variable de respuesta es estadísticamente significativa.
+$$estadoNutricion = 1/{(1+ e ^{-(-1.9459 + 3.2677*desempenoEscolar)})}$$
 El numero de iteraciones fueron 4 y la medidad de calidad relativa AIC es de 485.5 para una comparacion con otros modelos.
 El grafico del modelo es el siguiente:
 ```{R}
@@ -410,7 +435,7 @@ dist_estacion = steadyStates(mc)
 dist_estacion
 ```
 
-b. Realizar el grafico
+b. Realizar el grafico \n
 El gráfico generado muestra el grafo de la matriz de transicion con las probabilidades de transición como aristas y el nombre de cada estado 
 como vertice.
 ```{R}
